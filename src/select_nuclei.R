@@ -279,6 +279,7 @@ setkeyv(postCounts, "condition")
 logCounts = preCounts[postCounts]
 logCounts[, removed := total-kept]
 logCounts[, percKept := sprintf("%.2f%%", kept/total*100, 2)]
+logCounts[, kSigma := ksigma]
 
 cat("Selected nuclei:\n")
 print(logCounts)
