@@ -36,14 +36,14 @@ all nuclear boxes (useful if new selection should be performed).
 ''', formatter_class = argparse.RawDescriptionHelpFormatter)
 
 # Add mandatory arguments
+parser.add_argument('prefix', type = str, help = '''
+	User prefix (usually in the format "iFL").''')
 parser.add_argument('rootdir', type = str, help = '''
 	Path to root directory with nuclear boxes.''')
 parser.add_argument('outdir', type = str, help = '''
 	Path to output directory where the output should be written to.''')
 
 # Add arguments with default value
-parser.add_argument('-p', '--prefix', type = str, help = '''
-	Prefix for output table name. Defaults to output directory name.''')
 parser.add_argument('-a', '--aspect', type = float, nargs = 3,
 	help = """Physical size of Z, Y and X voxel sides in nm. Default: 300.0 216.6 216.6""",
 	metavar = ('Z', 'Y', 'X'), default = [300., 216.6, 216.6])
@@ -66,9 +66,6 @@ args.threads = check_threads(args.threads)
 # FUNCTIONS ====================================================================
 
 def buildVxNuclearProfile(n, condition):
-	import commonFunctions as cF
-	from scipy.interpolate import RegularGridInterpolator
-
 	sample = "%s%s" % (n, condition)
 
 	# Read images
@@ -84,8 +81,8 @@ def buildVxNuclearProfile(n, condition):
 	empty -= 1
 	empty *= -1
 
-	laminD = gp.tools.distance.calc_lamina_distance(mask, aspect)
-	centrD = gp.tools.distance.calc_lamina_distance(empty, aspect)
+	laminD = gp.tools.distance.calc_lamina_distance(mask, args.aspect)
+	centrD = gp.tools.distance.calc_lamina_distance(empty, args.aspect)
 
 	mask_flat = mask.reshape([np.prod(mask.shape)])
 	mask_flat = np.where(mask_flat.tolist())[0].tolist()
@@ -120,10 +117,9 @@ def buildVxNuclearProfile(n, condition):
 
 # RUN ==========================================================================
 
-# Identify nuclei
 sampleList = list(set([x.split(".")[0] for x in os.listdir(args.rootdir)]))
+regexp = re.compile(r"^(.*)(%s.*)$" % args.prefix)
 
-regexp = re.compile(r"^(.*)(%s.*)$" % prefix)
 nd = {}
 for n in tqdm(sampleList, desc = "Dividing in conditions"):
 	m = re.match(regexp, n).groups()
@@ -133,7 +129,7 @@ for n in tqdm(sampleList, desc = "Dividing in conditions"):
 		nd[m[1]] = [m[0]]
 
 for condition in nd.keys():
-	Parallel(n_jobs = ncores, verbose = 11)(
+	Parallel(n_jobs = args.threads, verbose = 11)(
 	    delayed(buildVxNuclearProfile)(n, condition)
 	    for n in nd[condition])
 
