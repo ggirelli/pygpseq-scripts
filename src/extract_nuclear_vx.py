@@ -68,12 +68,10 @@ args.threads = check_threads(args.threads)
 def buildVxNuclearProfile(n, condition):
 	sample = "%s%s" % (n, condition)
 
-	# Read images
 	mask = gp.tools.image.add_top_bottom_slides(imread(f'{args.rootdir}/{sample}.tif'))
 	idna = gp.tools.image.add_top_bottom_slides(imread(f'{args.rootdir}/{sample}.dna.tif'))
 	isig = gp.tools.image.add_top_bottom_slides(imread(f'{args.rootdir}/{sample}.sig.tif'))
 
-	# Identify nuclear center of mass
 	ncom = np.array(center_of_mass(mask)).astype("i")
 
 	empty = np.zeros(mask.shape)
@@ -87,7 +85,6 @@ def buildVxNuclearProfile(n, condition):
 	mask_flat = mask.reshape([np.prod(mask.shape)])
 	mask_flat = np.where(mask_flat.tolist())[0].tolist()
 
-	# Prepare output
 	DTYPE_NUCLEAR_DATA = [
 		('dna', 'u8'),
 		('signal', 'u8'),
@@ -98,7 +95,6 @@ def buildVxNuclearProfile(n, condition):
 	]
 	data = np.zeros(len(mask_flat), dtype = DTYPE_NUCLEAR_DATA)
 
-	# Flatten data for export
 	data['dna'] = gp.tools.vector.flatten_and_select(idna, mask_flat)
 	data['signal'] = gp.tools.vector.flatten_and_select(isig, mask_flat)
 	data['lamina_dist'] = gp.tools.vector.flatten_and_select(laminD, mask_flat)
