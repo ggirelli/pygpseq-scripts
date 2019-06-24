@@ -53,6 +53,9 @@ parser.add_argument('--version', action = 'version',
 # Parse arguments
 args = parser.parse_args()
 
+assert os.path.isdir(args.rootdir)
+assert os.path.isdir(args.outdir)
+
 if type(None) == type(args.prefix):
 	args.prefix = os.basename(args.outdir)
 
@@ -72,6 +75,7 @@ for n in nuclei_list:
 	else:
 		nuclei_dict[condition].append(signature)
 
+pxArea = np.prod(args.aspect[1:])*1e-6
 vxVolume = np.prod(args.aspect)*1e-9 # (um3)
 
 data = []
@@ -93,6 +97,8 @@ for condition in tqdm(list(nuclei_dict.keys()), desc = "Condition"):
 		nData = {
 			'condition' : [condition],						# Dataset
 			'sid' : [sid], 'nid' : [nid],					# Series/Nucleus ID
+			'area_px' : mask.max(0).sum(),					# Z-projection area in px
+			'area_um2' : mask.max(0).sum()*pxArea,			# Z-projection area in um2
 			'volume_vx' : [mask.sum()],						# Volume in vx
 			'volume_um3' : [mask.sum()*vxVolume],			# Volume in um3
 			'radius_um' : [nRadius],						# Radius in um
