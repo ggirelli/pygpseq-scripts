@@ -68,10 +68,10 @@ for fname in flist:
 	else:
 		meta[eid].append(fname)
 
-breaks = np.linspace(0, 1, args.n)
+breaks = np.linspace(0, 1, args.nbins)
 for eid in meta.keys():
 	bins = [{"mid":np.mean(breaks[i:(i+1)]),"dna":[],"sig":[],"rat":[]}
-		for i in range(args.n)]
+		for i in range(args.nbins)]
 
 	for fname in tqdm(meta[eid], desc = "Nucleus"):
 		with open(os.path.join(args.rootdir, fname), "r") as IH:
