@@ -67,7 +67,7 @@ args.threads = check_threads(args.threads)
 # FUNCTIONS ====================================================================
 
 def get_nucleus_feats(signature, condition):
-	sid, nid = [int(x) for x in re.match(r's([0-9]+)n([0-9]+)',"s12n23").groups()]
+	sid, nid = [int(x) for x in re.match(r's([0-9]+)n([0-9]+)', signature).groups()]
 
 	mask = gp.tools.image.add_top_bottom_slides(
 		imread(os.path.join(args.rootdir, f'{signature}{condition}.tif')))
