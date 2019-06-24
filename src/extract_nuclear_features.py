@@ -77,7 +77,10 @@ def get_nucleus_feats(signature, condition):
 	isig = gp.tools.image.add_top_bottom_slides(
 		imread(os.path.join(args.rootdir, f'{signature}{condition}.sig.tif')))
 
-	nRadius = (mask.sum()*vxVolume*3/4/np.pi)**(1/3)
+	nARadius_um = (mask.max(0).sum()*pxArea/np.pi)**.5
+	nARadius_vx = (mask.max(0).sum()/np.pi)**.5
+	nRadius_um = (mask.sum()*vxVolume*3/4/np.pi)**(1/3)
+	nRadius_vx = (mask.sum()*3/4/np.pi)**(1/3)
 	nSurface = gp.tools.image.calc_surface(mask, args.aspect)
 
 	nData = {
@@ -85,15 +88,18 @@ def get_nucleus_feats(signature, condition):
 		'sid' : [sid], 'nid' : [nid],					# Series/Nucleus ID
 		'area_px' : mask.max(0).sum(),					# Z-projection area in px
 		'area_um2' : mask.max(0).sum()*pxArea,			# Z-projection area in um2
+		'a2radius_px' : [nARadius_um],					# Radius in um (from area)
+		'a2radius_um' : [nARadius_vx],					# Radius in px (from area)
 		'volume_vx' : [mask.sum()],						# Volume in vx
 		'volume_um3' : [mask.sum()*vxVolume],			# Volume in um3
-		'radius_um' : [nRadius],						# Radius in um
+		'v2radius_px' : [nRadius_um],					# Radius in um (from volume)
+		'v2radius_um' : [nRadius_vx],					# Radius in vx (from volume)
 		'dna_sum' : [np.nansum(idna[mask != 0])],		# DNA intensity integral
 		'dna_mean' : [np.nanmean(idna[mask != 0])],		# DNA intensity mean
 		'sig_sum' : [np.nansum(isig[mask != 0])],		# Signal intensity integral
 		'sig_mean' : [np.nanmean(isig[mask != 0])],		# Signal intensity mean
 		'surface_um2' : [nSurface],						# Surface in um2
-		'sphericity' : 4*np.pi*(nRadius**2)/nSurface	# Sphericity
+		'sphericity' : 4*np.pi*(nRadius_um**2)/nSurface	# Sphericity
 	}
 
 	return(pd.DataFrame.from_dict(nData))

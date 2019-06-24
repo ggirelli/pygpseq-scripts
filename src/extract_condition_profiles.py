@@ -6,7 +6,6 @@
 # Author: Gabriele Girelli
 # Email: gigi.ga90@gmail.com
 # Date: 20190620
-# Project: GPSeq-YFISH
 # 
 # ------------------------------------------------------------------------------
 
