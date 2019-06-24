@@ -34,8 +34,8 @@ parser.add_argument('rootdir', type = str, help = '''
 	Path to root directory with nuclear voxel content.''')
 
 # Add arguments with default value
-parser.add_argument('-n', '--args.n', type = int,
-	help = """Number of bins from lamina to center.""", default = 200)
+parser.add_argument('-n', '--nbins', type = int, help = """
+	Number of bins from lamina to center. Default: 200""", default = 200)
 
 # Version flag
 version = "0.0.1"
