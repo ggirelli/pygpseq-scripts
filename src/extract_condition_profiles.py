@@ -86,16 +86,14 @@ if type(None) != type(args.selected):
 	for i in range(nTable.shape[0]):
 		n = nTable.loc[i]
 		signature = f's{n["sid"]}n{n["nid"]}{n["condition"]}'
-		print((i, n, signature))
 		selectedNuclei.add(signature)
 
-#print(meta)
-print(selectedNuclei)
-print([len(meta[x]) for x in meta.keys()])
+assert 0 != np.sum([len(meta[x]) for x in meta.keys()])
+
 for eid in meta.keys():
 	meta[eid] = [n for n in meta[eid] if n in selectedNuclei]
-print([len(meta[x]) for x in meta.keys()])
-sys.exit()
+
+assert 0 != np.sum([len(meta[x]) for x in meta.keys()])
 
 breaks = np.linspace(0, 1, args.nbins)
 for eid in meta.keys():
