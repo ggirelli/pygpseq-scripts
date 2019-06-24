@@ -32,14 +32,14 @@ of +-k*sigma around the mean of the first Gaussian.
 # Define mandatory arguments
 parser = add_argument(parser, arg = 'inpath',
 	help = 'Path to nuclei table.')
-parser = add_argument(parser, arg = 'outpath',
-	help = 'Path to output folder.')
 
 # Define elective arguments
 parser = add_argument(parser, arg = '--ksigma', short = '-k', type = class(0),
 	help = 'Sigma constant for interval definition.', default = 3, nargs = 1)
 parser = add_argument(parser, arg = '--threads', short = '-t', type = class(0),
 	help = 'Number of threads for parallelization.', default = 1, nargs = 1)
+parser = add_argument(parser, arg = '--outpath', short = "-O", type = class(""),
+	help = 'Path to output folder. Default to inpath parent folder.')
 
 # Version argument
 version_flag = "0.0.1"
@@ -60,6 +60,7 @@ attach(p['' != names(p)], warn.conflicts = F)
 
 if ( !file.exists(inpath) )
 	stop(sprintf("nuclei table not found: %s", inpath))
+if ( is.na(outpath) ) outpath = dirname(inpath)
 if ( !dir.exists(outpath) )
 	stop(sprintf("output folder not found: %s", outpath))
 
@@ -250,14 +251,18 @@ reqCols = c("condition", "sid", "nid", "volume_vx", "volume_um3",
 stopifnot(all(reqCols %in% names(nt)))
 
 cat("Nuclei counts:\n")
-print(nt[, .N, by = condition])
+preCounts = nt[, .(total = .N), by = condition]
+print(preCounts)
 
 # Filter per dataset -----------------------------------------------------------
 
 data = mclapply(unique(nt$condition),
 	FUN = select_dataset_population, nt, mc.cores = threads)
 
-pdf(file.path(outpath, "nuclei_select_population.selection.pdf"),
+outName = sprintf("%s.selected.%dsigma",
+	tools::file_path_sans_ext(basename(inpath)), ksigma)
+
+pdf(file.path(outpath, sprintf("%s.pdf", outName)),
 	width = 8, height = 9)
 p = lapply(data, FUN = function(x) {
 	theme_set(theme_cowplot())
@@ -265,10 +270,22 @@ p = lapply(data, FUN = function(x) {
 })
 graphics.off()
 
-outName = sprintf("%s.selected.%dsigma.tsv",
-	tools::file_path_sans_ext(basename(inpath)), ksigma)
 out = rbindlist(lapply(data, function(x) x$nuclei_table[selected == "kept"]))
-write.table(out, file.path(outpath, outName),
+
+postCounts = out[, .(kept = .N), by = condition]
+setkeyv(preCounts, "condition")
+setkeyv(postCounts, "condition")
+
+logCounts = preCounts[postCounts]
+logCounts[, removed := total-kept]
+logCounts[, percKept := sprintf("%.2f%%", kept/total*100, 2)]
+
+cat("Selected nuclei:\n")
+print(logCounts)
+
+write.table(logCounts, file.path(outpath, sprintf("%s.log", outName)),
+	quote = F, row.names = F, col.names = T, sep = "\t")
+write.table(out, file.path(outpath, sprintf("%s.tsv", outName)),
 	quote = F, row.names = F, col.names = T, sep = "\t")
 
 # END --------------------------------------------------------------------------
