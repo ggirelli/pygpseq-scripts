@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # ------------------------------------------------------------------------------
@@ -72,9 +72,9 @@ def buildVxNuclearProfile(n, condition):
 	sample = "%s%s" % (n, condition)
 
 	# Read images
-	mask = gp.tools.image.add_top_bottom_slides(imread(f"{args.rootdir}/{sample}.tif" ))
-	idna = gp.tools.image.add_top_bottom_slides(imread(f"{args.rootdir}/{sample}.dna.tif"))
-	isig = gp.tools.image.add_top_bottom_slides(imread(f"{args.rootdir}/{sample}.sig.tif"))
+	mask = gp.tools.image.add_top_bottom_slides(imread(f'{args.rootdir}/{sample}.tif'))
+	idna = gp.tools.image.add_top_bottom_slides(imread(f'{args.rootdir}/{sample}.dna.tif'))
+	isig = gp.tools.image.add_top_bottom_slides(imread(f'{args.rootdir}/{sample}.sig.tif'))
 
 	# Identify nuclear center of mass
 	ncom = np.array(center_of_mass(mask)).astype("i")
