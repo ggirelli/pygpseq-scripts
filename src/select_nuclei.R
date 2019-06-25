@@ -256,7 +256,7 @@ print(preCounts)
 
 # Filter per dataset -----------------------------------------------------------
 
-data = mclapply(unique(nt$condition),
+data = mclapply(sort(unique(nt$condition)),
 	FUN = select_dataset_population, nt, mc.cores = threads)
 
 outName = sprintf("%s.selected.%dsigma",
