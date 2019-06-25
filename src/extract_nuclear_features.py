@@ -40,7 +40,7 @@ parser.add_argument('outdir', type = str, help = '''
 	Path to output directory where the output should be written to.''')
 
 # Add arguments with default value
-parser.add_argument('-p', '--prefix', type = str, help = '''
+parser.add_argument('-P', '--prefix', type = str, help = '''
 	Prefix for output table name. Defaults to output directory name.''')
 parser.add_argument('-a', '--aspect', type = float, nargs = 3,
 	help = """Physical size of Z, Y and X voxel sides in nm. Default: 300.0 216.6 216.6""",
