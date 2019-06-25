@@ -39,6 +39,8 @@ parser.add_argument('--selected', type = str, help = """
 	Path to table of selected nuclei. Mandatory columns: condition, sid, nid""")
 parser.add_argument('-S', '--suffix', type = str, help = """
 	Suffix for output files.""", default = "")
+parser.add_argument('-O', '--outdir', type = str, help = """
+	Path to output directory where the output should be written to.""", default = "")
 
 # Version flag
 version = "0.0.1"
@@ -47,6 +49,12 @@ parser.add_argument('--version', action = 'version',
 
 # Parse arguments
 args = parser.parse_args()
+
+assert os.path.isdir(args.rootdir)
+if type(None) == type(args.outdir):
+	args.outdir = os.path.dirname(args.rootdir)
+else:
+	os.path.dirname(args.outdir)
 
 if 0 != len(args.suffix):
 	if not args.suffix.startswith("."):
@@ -96,6 +104,7 @@ for eid in meta.keys():
 assert 0 != np.sum([len(meta[x]) for x in meta.keys()])
 
 breaks = np.linspace(0, 1, args.nbins)
+allData = []
 for eid in meta.keys():
 	bins = [{"mid":np.mean(breaks[i:(i+1)]),"dna":[],"sig":[],"rat":[]}
 		for i in range(args.nbins)]
@@ -121,9 +130,13 @@ for eid in meta.keys():
 	data = pd.concat(data).reset_index(drop = True)
 	data['eid'] = eid
 
-	data.to_csv(os.path.join(os.path.dirname(args.rootdir),
+	data.to_csv(os.path.join(args.outdir,
 			f'{eid}.condition.profiles{args.suffix}.tsv'),
 		sep = '\t', index = False)
+	allData.append(data)
+
+pd.concat(allData).reset_index(drop = True).to_csv(os.path.join(args.outdir,
+		f'condition.profiles{args.suffix}.tsv'), sep = '\t', index = False)
 
 # END ==========================================================================
 
