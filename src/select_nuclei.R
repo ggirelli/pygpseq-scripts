@@ -270,6 +270,11 @@ p = lapply(data, FUN = function(x) {
 })
 graphics.off()
 
+png(file.path(outpath, sprintf("%s.png", outName)), width = 1600, height = 800)
+theme_set(theme_cowplot())
+plot_grid(plotlist = lapply(data, function(x) x$plot))
+graphics.off()
+
 out = rbindlist(lapply(data, function(x) x$nuclei_table[selected == "kept"]))
 
 postCounts = out[, .(kept = .N), by = condition]
