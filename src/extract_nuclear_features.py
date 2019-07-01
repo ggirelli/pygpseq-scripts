@@ -34,6 +34,8 @@ all nuclear boxes (useful if new selection should be performed).
 ''', formatter_class = argparse.RawDescriptionHelpFormatter)
 
 # Add mandatory arguments
+parser.add_argument('user', type = str, help = '''
+	User prefix (usually in the format "iFL").''')
 parser.add_argument('rootdir', type = str, help = '''
 	Path to root directory with nuclear boxes.''')
 parser.add_argument('outdir', type = str, help = '''
@@ -110,8 +112,8 @@ flist = os.listdir(args.rootdir)
 nuclei_list = set([f.split(".")[0] for f in flist])
 nuclei_dict = {}
 for n in nuclei_list:
-	signature, condition = n.split("iSK")
-	condition = "iSK" + condition
+	signature, condition = n.split(args.user)
+	condition = args.user + condition
 	if condition not in nuclei_dict.keys():
 		nuclei_dict[condition] = [signature]
 	else:
