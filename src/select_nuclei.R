@@ -204,6 +204,7 @@ select_dataset_population = function(ldata, nt) {
 		) + ggtitle(sprintf("%s: %d/%d nuclei selected", label, dt[selected == "kept", .N], nrow(dt))
 		) + coord_fixed(
 			(max(dt$volume_vx)-min(dt$volume_vx))/(max(dt$dna_sum)-min(dt$dna_sum))
+		) + theme(axis.text.x = element_text(angle = 45, hjust = 1)
 		)
 
 	p2 = axis_canvas(p1, axis = "y", coord_flip = TRUE) + geom_line(
