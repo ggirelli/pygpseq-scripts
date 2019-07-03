@@ -40,6 +40,9 @@ parser = add_argument(parser, arg = '--threads', short = '-t', type = class(0),
 	help = 'Number of threads for parallelization.', default = 1, nargs = 1)
 parser = add_argument(parser, arg = '--outpath', short = "-O", type = class(""),
 	help = 'Path to output folder. Default to inpath parent folder.')
+parser = add_argument(parser, arg = '--date-meta', short = "-d", type = class(""),
+	help = paste0('Path to session meta table with "dataset", ',
+		'"session" (id) and acqusition "date" columns.'))
 
 # Version argument
 version_flag = "0.0.1"
@@ -159,8 +162,17 @@ calc_feature_range = function(data, column, k_sigma = 3, plot = F) {
 	))
 }
 
-select_dataset_population = function(dataset, nt) {
-	dt = nt[condition == dataset,]
+select_dataset_population = function(ldata, nt) {
+	dataset = ldata[[1]]
+	dateSel = ldata[[2]]
+
+	if ( !is.na(dateSel) ) {
+		dt = nt[condition == dataset & date == dateSel,]
+		label = sprintf("%s-%s", dataset, dateSel)
+	} else {
+		dt = nt[condition == dataset,]
+		label = dataset
+	}
 
 	dna_sum_cfr = calc_feature_range(dt, "dna_sum", ksigma)
 	volume_vx_cfr = calc_feature_range(dt, "volume_vx", ksigma)
@@ -189,7 +201,7 @@ select_dataset_population = function(dataset, nt) {
 		) + guides(color = F
 		) + scale_color_manual(values = c(color$selected, color$discarded)
 		) + xlab("Volume (vx)") + ylab("DNA stain intensity integral (a.u.)"
-		) + ggtitle(sprintf("%s: %d/%d nuclei selected", dataset, dt[selected == "kept", .N], nrow(dt))
+		) + ggtitle(sprintf("%s: %d/%d nuclei selected", label, dt[selected == "kept", .N], nrow(dt))
 		) + coord_fixed(
 			(max(dt$volume_vx)-min(dt$volume_vx))/(max(dt$dna_sum)-min(dt$dna_sum))
 		)
@@ -226,6 +238,7 @@ select_dataset_population = function(dataset, nt) {
 
 	data = data.table(
 		dataset = dataset,
+		date = dateSel,
 		volume_vx_min = volume_vx_cfr$range[1],
 		volume_vx_max = volume_vx_cfr$range[2],
 		dna_sum_min = dna_sum_cfr$range[1],
@@ -256,8 +269,27 @@ print(preCounts)
 
 # Filter per dataset -----------------------------------------------------------
 
-data = mclapply(sort(unique(nt$condition)),
-	FUN = select_dataset_population, nt, mc.cores = threads)
+if ( !is.na(date_meta) ) {
+	if ( file.exists(date_meta) ) {
+		dateMeta = fread(date_meta)
+		stopifnot(all(c("dataset", "session", "date") %in% names(dateMeta)))
+		setkeyv(dateMeta, c("dataset", "session"))
+		setkeyv(nt, c("condition", "sid"))
+
+		nt = nt[dateMeta]
+		groups = apply(nt[, .(date = unique(date)), by = condition
+			][order(condition)], 1, as.list)
+
+		data = mclapply(groups, FUN = select_dataset_population, nt, mc.cores = threads)
+	} else {
+		date_meta = NA
+	}
+}
+if ( is.na(date_meta) ) {
+	nt[, date := NA]
+	groups = apply(nt[, .(date = unique(date)), by = condition][order(condition)], 1, as.list)
+	data = mclapply(groups, FUN = select_dataset_population, nt, mc.cores = threads)
+}
 
 outName = sprintf("%s.selected.%dsigma",
 	tools::file_path_sans_ext(basename(inpath)), ksigma)
