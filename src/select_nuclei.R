@@ -21,19 +21,16 @@ require(viridis)
 
 # INPUT ========================================================================
 
-# Create arguent parser
-scriptName = "nucleiSelectPopulation.R"
+scriptName = "select_nuclei.R"
 parser = arg_parser(paste0(
 "Subselect nuclei based on volume (vx) and DNA stain intensity integral.
 Specifically, fits sum of Gaussians to the distribution, then select an interval
 of +-k*sigma around the mean of the first Gaussian.
 "), name = scriptName)
 
-# Define mandatory arguments
 parser = add_argument(parser, arg = 'inpath',
 	help = 'Path to nuclei table.')
 
-# Define elective arguments
 parser = add_argument(parser, arg = '--ksigma', short = '-k', type = class(0),
 	help = 'Sigma constant for interval definition.', default = 3, nargs = 1)
 parser = add_argument(parser, arg = '--threads', short = '-t', type = class(0),
@@ -44,7 +41,6 @@ parser = add_argument(parser, arg = '--date-meta', short = "-d", type = class(""
 	help = paste0('Path to session meta table with "dataset", ',
 		'"session" (id) and acqusition "date" columns.'))
 
-# Version argument
 version_flag = "0.0.1"
 parser = add_argument(parser, arg = '--version', short = '-V',
 	help = 'Print version and quit.', flag = T)

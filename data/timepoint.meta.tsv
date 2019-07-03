@@ -1,0 +1,13 @@
+levels	time
+1min	1
+2min	2
+5min	5
+10min	10
+15min	15
+30min	30
+45min	45
+1h	60
+2h	120
+6h	360
+ON	960
+LongON	4320
