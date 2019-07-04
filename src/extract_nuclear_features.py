@@ -66,6 +66,17 @@ if type(None) == type(args.prefix):
 
 args.threads = check_threads(args.threads)
 
+print(f'''
+ # {sys.argv[0]} v{version}
+
+     User : {args.user}
+     Root : {args.rootdir}
+   Output : {args.outdir}
+   Prefix : "{args.prefix}"
+   Aspect : {args.aspect}
+ #threads : {args.threads}
+''')
+
 # FUNCTIONS ====================================================================
 
 def get_nucleus_feats(signature, condition):
@@ -110,28 +121,32 @@ def get_nucleus_feats(signature, condition):
 flist = os.listdir(args.rootdir)
 
 nuclei_list = set([f.split(".")[0] for f in flist])
-nuclei_dict = {}
+nd = {}
 for n in nuclei_list:
 	signature, condition = n.split(args.user)
 	condition = args.user + condition
-	if condition not in nuclei_dict.keys():
-		nuclei_dict[condition] = [signature]
+	if condition not in nd.keys():
+		nd[condition] = [signature]
 	else:
-		nuclei_dict[condition].append(signature)
+		nd[condition].append(signature)
 
 pxArea = np.prod(args.aspect[1:])*1e-6
 vxVolume = np.prod(args.aspect)*1e-9 # (um3)
 
 data = []
-for condition in tqdm(list(nuclei_dict.keys()), desc = "Condition"):
-	cData = Parallel(n_jobs = args.threads, verbose = 11)(
+cid = 0
+for condition in sorted(list(nd.keys())):
+	cData = Parallel(n_jobs = args.threads, verbose = 0)(
 	    delayed(get_nucleus_feats)(signature, condition)
-	    for signature in nuclei_dict[condition])
+	    for signature in tqdm(nd[condition],
+	    	desc = f'{cid+1}/{len(nd)} {condition} [n.threads={args.threads}]'))
 	data.append(pd.concat(cData))
-outData = pd.concat(data).reset_index(drop = True)
+	cid += 1
 
-outData.to_csv(os.path.join(args.outdir, f"{args.prefix}.nuclear_features.tsv"),
-	sep = "\t",index = False, header = True)
+print("Merging and writing...")
+pd.concat(data).reset_index(drop = True).to_csv(
+	os.path.join(args.outdir, f"{args.prefix}.nuclear_features.tsv"),
+	sep = "\t", index = False, header = True)
 
 # END ==========================================================================
 
