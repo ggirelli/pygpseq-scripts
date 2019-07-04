@@ -159,7 +159,7 @@ for eid in sorted(meta.keys()):
 		binSet = binList.pop()
 		bid = 0
 		while 0 < len(binSet):
-			single_bin = binSet.pop()
+			single_bin = binSet.pop(0)
 			bins[bid]['dna'].extend(single_bin['dna'])
 			bins[bid]['sig'].extend(single_bin['sig'])
 			bins[bid]['rat'].extend(single_bin['rat'])
