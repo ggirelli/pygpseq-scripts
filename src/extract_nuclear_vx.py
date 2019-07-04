@@ -76,6 +76,19 @@ args.threads = check_threads(args.threads)
 args.mid_type = gp.const.MID_SEC_ARG_LABELS.index(args.mid_type)
 args.dist_type = gp.const.LD_ARG_LABELS.index(args.dist_type)
 
+print(f'''
+ # {sys.argv[0]} v{version}
+  
+     Prefix : {args.prefix}
+       Root : {args.rootdir}
+     Output : {args.outdir}
+     Aspect : {args.aspect}
+   Distance : {args.dist_type}
+ Midsection : {args.mid_type}
+   #threads : {args.threads}
+2D analysis : {args.only_from_mid}
+''')
+
 # FUNCTIONS ====================================================================
 
 def buildVxNuclearProfile(n, condition):
@@ -116,8 +129,8 @@ def buildVxNuclearProfile(n, condition):
 
 	data['norm_lamina_dist'] = gp.tools.vector.flatten_and_select(
 		laminD / (laminD + centrD), mask_flat)
-	data['ratio'] = gp.tools.vector.flatten_and_select(
-		isig / idna, mask_flat)
+	np.seterr(divide='ignore', invalid='ignore')
+	data['ratio'] = gp.tools.vector.flatten_and_select(isig / idna, mask_flat)
 
 	df = pd.DataFrame(data)
 	df['c'] = condition
@@ -138,10 +151,13 @@ for n in tqdm(sampleList, desc = "Dividing in conditions"):
 	else:
 		nd[m[1]] = [m[0]]
 
-for condition in nd.keys():
-	Parallel(n_jobs = args.threads, verbose = 11)(
+cid = 0
+for condition in sorted(nd.keys()):
+	Parallel(n_jobs = args.threads, verbose = 0)(
 	    delayed(buildVxNuclearProfile)(n, condition)
-	    for n in nd[condition])
+	    for n in tqdm(nd[condition],
+	    	desc = f'{cid+1}/{len(nd)} {condition} [n.threads={args.threads}]'))
+	cid += 1
 
 # END ==========================================================================
 
