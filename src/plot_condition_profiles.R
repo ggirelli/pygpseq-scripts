@@ -34,7 +34,7 @@ and the following files: meta.tsv.
 "), name = scriptName)
 
 parser = add_argument(parser, arg = 'dataset',
-	help = 'Path to folder with mid and 3d profile subfolders..')
+	help = 'Dataset ID, e.g., iXX1_2')
 parser = add_argument(parser, arg = 'rootDir',
 	help = 'Path to extra folder.')
 
@@ -48,7 +48,6 @@ parser = add_argument(parser, arg = '--outpath', short = "-O", type = class(""),
 	help = 'Path to output folder. Default to root dir.')
 
 p = parse_args(parser)
-
 attach(p['' != names(p)])
 
 if ( is.na(timepoints) ) {
@@ -181,8 +180,7 @@ save_and_plot(p, file.path(outpath,
 l = lapply(c("mid", "3d"), function(atype) {
 	pr = fread(file.path(rootDir,
 		sprintf("%s_profiles/condition.profiles.%s.%s.tsv",
-		atype, dataset, atype)), col.names = c("mid", "dna_mean", "dna_median",
-		"sig_mean", "sig_median", "rat_mean", "rat_median", "eid"))
+		atype, dataset, atype)))
 
 	pr$eid = unlist(lapply(pr$eid,
 		function(x) unlist(strsplit(x, ".", fixed = T))[1]))
