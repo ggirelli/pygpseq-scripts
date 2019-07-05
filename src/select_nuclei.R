@@ -12,12 +12,12 @@
 
 # DEPENDENCIES =================================================================
 
-require(argparser)
-require(cowplot)
-require(data.table)
-require(ggplot2)
-require(parallel)
-require(viridis)
+suppressMessages(require(argparser))
+suppressMessages(require(cowplot))
+suppressMessages(require(data.table))
+suppressMessages(require(ggplot2))
+suppressMessages(require(parallel))
+suppressMessages(require(viridis))
 
 # INPUT ========================================================================
 
