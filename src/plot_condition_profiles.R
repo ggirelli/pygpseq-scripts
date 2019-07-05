@@ -16,6 +16,7 @@ suppressMessages(require(argparser))
 suppressMessages(require(cowplot))
 suppressMessages(require(data.table))
 suppressMessages(require(ggplot2))
+suppressMessages(require(ggrepel))
 suppressMessages(require(LaCroixColoR))
 suppressMessages(require(rootSolve))
 suppressMessages(require(RColorBrewer))
@@ -148,6 +149,9 @@ save_and_plot <- function(x, bname, width, height,
 # RUN ==========================================================================
 
 meta = fread(file.path(rootDir, "meta.tsv"), key = "condition")
+stopifnot(all(c("condition", "timeLab", "label") %in% names(meta)))
+meta[, label := as.character(label)]
+meta[is.na(label), label := ""]
 
 nf = fread(file.path(rootDir,
 	sprintf("nuclear_selection/%s.nuclear_features.tsv", dataset)))
@@ -155,15 +159,16 @@ nf$condition = unlist(lapply(nf$condition,
 	function(x) unlist(strsplit(x, "_", fixed = T))[1]))
 setkeyv(nf, c("condition", "sid", "nid"))
 nf = nf[meta]
-nf[, info := paste0(condition, "-", label)]
+nf[, info := paste0(condition, "-", timeLab, "-", label)]
 
-setkeyv(nf, "label")
+setkeyv(nf, "timeLab")
 nf = nf[cMeta][!is.na(condition)]
 nfMeta = nf[, .(color = unique(colors)), by = info]
 nfColors = nfMeta$color
 names(nfColors) = nfMeta$info
 
-p = ggplot(melt(nf, id.vars = c("condition", "sid", "nid", "label", "info", "colors")),
+p = ggplot(melt(nf, id.vars = c("condition", "sid", "nid",
+		"timeLab", "label", "info", "colors")),
 		aes(x = value, color = info)
 	) + geom_density(
 	) + facet_wrap(~variable, scales = "free"
@@ -187,9 +192,10 @@ l = lapply(c("mid", "3d"), function(atype) {
 	setkeyv(pr, "eid")
 	pr = pr[meta]
 
-	pr[, label := factor(label, levels = cMeta$levels)]
-	pr[, info := reorder(paste0(eid, "-", label), as.numeric(label))]
-	setkeyv(pr, "label")
+	pr[, timeLab := factor(timeLab, levels = cMeta$levels)]
+	pr[, info := reorder(
+		paste0(eid, "-", timeLab, "-", label), as.numeric(timeLab))]
+	setkeyv(pr, "timeLab")
 	pr = pr[cMeta][!is.na(eid)]
 	prMeta = pr[, .(color = unique(colors)), by = c("info", "label")]
 	prColors = prMeta$color
@@ -234,7 +240,7 @@ l = lapply(c("mid", "3d"), function(atype) {
 			fill = NA
 		) + xlab("Normalized lamina distance (a.u.)"
 		) + ylab("Median Signal channel intensity (a.u.)"
-		) + guides(color = guide_legend(title = "Condition")
+		) + guides(color = guide_legend(title = "Condition", nrow = 2)
 		) + theme(legend.position = "top"
 		) + ggtitle(sprintf("%s - %s", dataset, atype)
 		) + scale_color_manual(breaks = prMeta$info, values = prColors
@@ -290,6 +296,10 @@ l = lapply(c("mid", "3d"), function(atype) {
 		) + theme(legend.position = "top"
 		) + scale_color_brewer(palette = "Set1"
 		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + geom_label_repel(aes(label = l),
+			segment.color = '#989898', segment.size = .25,
+			color = "#323232", size = 3,
+			point.padding = .5, force = 20
 		)
 	save_and_plot(p, file.path(outpath,
 		sprintf("%s.%s.profiles.points", dataset, atype)),
