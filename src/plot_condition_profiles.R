@@ -203,6 +203,8 @@ l = lapply(c("mid", "3d"), function(atype) {
 
 	pr = pr[mid <= xthr[2] & mid >= xthr[1]]
 
+	# Single profiles ------------------------------------------------
+
 	p = ggplot(pr, aes(x = mid, y = sig_median, color = info)
 		) + geom_point() + geom_line(
 		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
@@ -216,8 +218,42 @@ l = lapply(c("mid", "3d"), function(atype) {
 		) + xlim(0, 1
 		)
 	save_and_plot(p, file.path(outpath,
-		sprintf("%s.%s.profiles.model", dataset, atype)),
+		sprintf("%s.%s.sig.profiles.model", dataset, atype)),
 		format = "png", 15, 9)
+
+	p = ggplot(pr, aes(x = mid, y = dna_median, color = info)
+		) + geom_point() + geom_line(
+		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
+			fill = NA, linetype = "dashed", color = "#323232"
+		) + xlab("Normalized lamina distance (a.u.)"
+		) + ylab("Median DNA channel intensity (a.u.)"
+		) + guides(color = F
+		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + facet_wrap(~info
+		) + scale_color_manual(breaks = prMeta$info, values = prColors
+		) + xlim(0, 1
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.dna.profiles.model", dataset, atype)),
+		format = "png", 15, 9)
+
+	p = ggplot(pr, aes(x = mid, y = rat_median, color = info)
+		) + geom_point() + geom_line(
+		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
+			fill = NA, linetype = "dashed", color = "#323232"
+		) + xlab("Normalized lamina distance (a.u.)"
+		) + ylab("Median Signal/DNA intensity (a.u.)"
+		) + guides(color = F
+		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + facet_wrap(~info
+		) + scale_color_manual(breaks = prMeta$info, values = prColors
+		) + xlim(0, 1
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.rat.profiles.model", dataset, atype)),
+		format = "png", 15, 9)
+
+	# Single profiles (free scale) -----------------------------------
 
 	p = ggplot(pr, aes(x = mid, y = sig_median, color = info)
 		) + geom_point() + geom_line(
@@ -232,8 +268,42 @@ l = lapply(c("mid", "3d"), function(atype) {
 		) + xlim(0, 1
 		)
 	save_and_plot(p, file.path(outpath,
-		sprintf("%s.%s.profiles.model.free", dataset, atype)),
+		sprintf("%s.%s.sig.profiles.model.free", dataset, atype)),
 		format = "png", 15, 9)
+
+	p = ggplot(pr, aes(x = mid, y = dna_median, color = info)
+		) + geom_point() + geom_line(
+		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
+			fill = NA, linetype = "dashed", color = "#323232"
+		) + xlab("Normalized lamina distance (a.u.)"
+		) + ylab("Median DNA channel intensity (a.u.)"
+		) + guides(color = F
+		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + facet_wrap(~info, scales = "free"
+		) + scale_color_manual(breaks = prMeta$info, values = prColors
+		) + xlim(0, 1
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.dna.profiles.model.free", dataset, atype)),
+		format = "png", 15, 9)
+
+	p = ggplot(pr, aes(x = mid, y = rat_median, color = info)
+		) + geom_point() + geom_line(
+		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
+			fill = NA, linetype = "dashed", color = "#323232"
+		) + xlab("Normalized lamina distance (a.u.)"
+		) + ylab("Median Signal/DNA intensity (a.u.)"
+		) + guides(color = F
+		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + facet_wrap(~info, scales = "free"
+		) + scale_color_manual(breaks = prMeta$info, values = prColors
+		) + xlim(0, 1
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.rat.profiles.model.free", dataset, atype)),
+		format = "png", 15, 9)
+
+	# Single profiles (overlay) --------------------------------------
 
 	p = ggplot(pr, aes(x = mid, y = sig_median, color = info)
 		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
@@ -247,8 +317,40 @@ l = lapply(c("mid", "3d"), function(atype) {
 		) + xlim(0, 1
 		)
 	save_and_plot(p, file.path(outpath,
-		sprintf("%s.%s.profiles.model.overlay", dataset, atype)),
+		sprintf("%s.%s.sig.profiles.model.overlay", dataset, atype)),
 		format = "png", 9, 9)
+
+	p = ggplot(pr, aes(x = mid, y = dna_median, color = info)
+		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
+			fill = NA
+		) + xlab("Normalized lamina distance (a.u.)"
+		) + ylab("Median DNA channel intensity (a.u.)"
+		) + guides(color = guide_legend(title = "Condition", nrow = 2)
+		) + theme(legend.position = "top"
+		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + scale_color_manual(breaks = prMeta$info, values = prColors
+		) + xlim(0, 1
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.dna.profiles.model.overlay", dataset, atype)),
+		format = "png", 9, 9)
+
+	p = ggplot(pr, aes(x = mid, y = rat_median, color = info)
+		) + geom_smooth(method = "lm", formula = "y ~ poly(x, 5, raw = T)",
+			fill = NA
+		) + xlab("Normalized lamina distance (a.u.)"
+		) + ylab("Median Signal/DNA intensity (a.u.)"
+		) + guides(color = guide_legend(title = "Condition", nrow = 2)
+		) + theme(legend.position = "top"
+		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + scale_color_manual(breaks = prMeta$info, values = prColors
+		) + xlim(0, 1
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.rat.profiles.model.overlay", dataset, atype)),
+		format = "png", 9, 9)
+
+	# Inflection and peak detection ----------------------------------
 
 	pointData = rbindlist(by(pr, pr$info, function(ct) {
 		regrC = coefficients(lm(ct$sig_median ~ poly(ct$mid, 5, raw = T)))
@@ -278,6 +380,7 @@ l = lapply(c("mid", "3d"), function(atype) {
 		}
 
 		rData = rbindlist(list(gdata[1, ], hdata[1, ]))
+		if ( 0 == nrow(rData) ) return(NULL)
 		rData$e = ct[1, eid]
 		rData$l = ct[1, label]
 		rData$t = ct[1, time]
@@ -285,7 +388,7 @@ l = lapply(c("mid", "3d"), function(atype) {
 		return(rData)
 	}))
 	write.table(pointData, file.path(outpath,
-		sprintf("%s.%s.point_data.tsv", dataset, atype)),
+		sprintf("%s.%s.sig.point_data.tsv", dataset, atype)),
 		quote = F, row.names = F, col.names = T, sep = "\t")
 
 	p = ggplot(pointData[!is.na(c)], aes(y = x, x = t, group = v, color = v)
@@ -295,14 +398,126 @@ l = lapply(c("mid", "3d"), function(atype) {
 		) + guides(color = guide_legend("Point", title.position = "left")
 		) + theme(legend.position = "top"
 		) + scale_color_brewer(palette = "Set1"
-		) + ggtitle(sprintf("%s - %s", dataset, atype)
+		) + ggtitle(sprintf("%s - %s - Signal median profile", dataset, atype)
 		) + geom_label_repel(aes(label = l),
 			segment.color = '#989898', segment.size = .25,
 			color = "#323232", size = 3,
 			point.padding = .5, force = 20
 		)
 	save_and_plot(p, file.path(outpath,
-		sprintf("%s.%s.profiles.points", dataset, atype)),
+		sprintf("%s.%s.sig.profiles.points", dataset, atype)),
+		format = "png", 12, 6)
+
+	pointData = rbindlist(by(pr, pr$info, function(ct) {
+		regrC = coefficients(lm(ct$dna_median ~ poly(ct$mid, 5, raw = T)))
+		f <- eval(parse(text = paste0("function(x) (",
+			regrC[1], "+x*", regrC[2], "+(x**2)*", regrC[3], "+(x**3)*",
+			regrC[4], "+(x**4)*", regrC[5], "+(x**5)*", regrC[6], ")")))
+		g <- function(x) {}
+		body(g) <- D(body(f), 'x')
+		h <- function(x) {}
+		body(h) <- D(body(g), 'x')
+
+		groots = uniroot.all(g, c(0,1))
+		gdata = NULL
+		if ( 0 != length(groots) ) {
+			gdata = data.table(x = groots, y = 0, v = "1st Peak", c = "signal")
+			gdata$label = unlist(lapply(gdata$x, labelNeighbours, ct$mid, g))
+			gdata = gdata[label == "+-"]
+		}
+
+		hroots = uniroot.all(h, c(0,1))
+		hdata = NULL
+		if ( 0 != length(hroots) ) {
+			hdata = data.table(x = hroots, y = 0,
+				v = "1st Inflection", c = "signal")
+			hdata$label = unlist(lapply(hdata$x, labelNeighbours, ct$mid, h))
+			hdata = hdata[label == "-+"]
+		}
+
+		rData = rbindlist(list(gdata[1, ], hdata[1, ]))
+		if ( 0 == nrow(rData) ) return(NULL)
+		rData$e = ct[1, eid]
+		rData$l = ct[1, label]
+		rData$t = ct[1, time]
+
+		return(rData)
+	}))
+	write.table(pointData, file.path(outpath,
+		sprintf("%s.%s.dna.point_data.tsv", dataset, atype)),
+		quote = F, row.names = F, col.names = T, sep = "\t")
+
+	p = ggplot(pointData[!is.na(c)], aes(y = x, x = t, group = v, color = v)
+		) + geom_point() + geom_line(
+		) + ylab("Normalized distance from lamina"
+		) + xlab("Time point") + ylim(0, 1
+		) + guides(color = guide_legend("Point", title.position = "left")
+		) + theme(legend.position = "top"
+		) + scale_color_brewer(palette = "Set1"
+		) + ggtitle(sprintf("%s - %s - DNA median profile", dataset, atype)
+		) + geom_label_repel(aes(label = l),
+			segment.color = '#989898', segment.size = .25,
+			color = "#323232", size = 3,
+			point.padding = .5, force = 20
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.dna.profiles.points", dataset, atype)),
+		format = "png", 12, 6)
+
+	pointData = rbindlist(by(pr, pr$info, function(ct) {
+		regrC = coefficients(lm(ct$rat_median ~ poly(ct$mid, 5, raw = T)))
+		f <- eval(parse(text = paste0("function(x) (",
+			regrC[1], "+x*", regrC[2], "+(x**2)*", regrC[3], "+(x**3)*",
+			regrC[4], "+(x**4)*", regrC[5], "+(x**5)*", regrC[6], ")")))
+		g <- function(x) {}
+		body(g) <- D(body(f), 'x')
+		h <- function(x) {}
+		body(h) <- D(body(g), 'x')
+
+		groots = uniroot.all(g, c(0,1))
+		gdata = NULL
+		if ( 0 != length(groots) ) {
+			gdata = data.table(x = groots, y = 0, v = "1st Peak", c = "signal")
+			gdata$label = unlist(lapply(gdata$x, labelNeighbours, ct$mid, g))
+			gdata = gdata[label == "+-"]
+		}
+
+		hroots = uniroot.all(h, c(0,1))
+		hdata = NULL
+		if ( 0 != length(hroots) ) {
+			hdata = data.table(x = hroots, y = 0,
+				v = "1st Inflection", c = "signal")
+			hdata$label = unlist(lapply(hdata$x, labelNeighbours, ct$mid, h))
+			hdata = hdata[label == "-+"]
+		}
+
+		rData = rbindlist(list(gdata[1, ], hdata[1, ]))
+		if ( 0 == nrow(rData) ) return(NULL)
+		rData$e = ct[1, eid]
+		rData$l = ct[1, label]
+		rData$t = ct[1, time]
+
+		return(rData)
+	}))
+	write.table(pointData, file.path(outpath,
+		sprintf("%s.%s.rat.point_data.tsv", dataset, atype)),
+		quote = F, row.names = F, col.names = T, sep = "\t")
+
+	p = ggplot(pointData[!is.na(c)], aes(y = x, x = t, group = v, color = v)
+		) + geom_point() + geom_line(
+		) + ylab("Normalized distance from lamina"
+		) + xlab("Time point") + ylim(0, 1
+		) + guides(color = guide_legend("Point", title.position = "left")
+		) + theme(legend.position = "top"
+		) + scale_color_brewer(palette = "Set1"
+		) + ggtitle(sprintf("%s - %s - Signal/DNA median profile", dataset, atype)
+		) + geom_label_repel(aes(label = l),
+			segment.color = '#989898', segment.size = .25,
+			color = "#323232", size = 3,
+			point.padding = .5, force = 20
+		)
+	save_and_plot(p, file.path(outpath,
+		sprintf("%s.%s.rat.profiles.points", dataset, atype)),
 		format = "png", 12, 6)
 })
 
