@@ -79,7 +79,7 @@ extract_descriptors = function(nd, sigCol = "sig_median") {
 	groots = uniroot.all(g, c(0,1))
 	gdata = NULL
 	if ( 0 != length(groots) ) {
-		gdata = data.table(x = groots, y = 0,
+		gdata = data.table(x = groots, y = f(groots),
 			type = "1st Peak", col = sigCol)
 		gdata$label = unlist(lapply(gdata$x, label_neighbours, nd$mid, g))
 		gdata = gdata[label == "+-"]
@@ -88,7 +88,7 @@ extract_descriptors = function(nd, sigCol = "sig_median") {
 	hroots = uniroot.all(h, c(0,1))
 	hdata = NULL
 	if ( 0 != length(hroots) ) {
-		hdata = data.table(x = hroots, y = 0,
+		hdata = data.table(x = hroots, y = f(hroots),
 			type = "1st Inflection", col = sigCol)
 		hdata$label = unlist(lapply(hdata$x, label_neighbours, nd$mid, h))
 		hdata = hdata[label == "-+"]
@@ -96,6 +96,11 @@ extract_descriptors = function(nd, sigCol = "sig_median") {
 
 	rData = rbindlist(list(gdata[1, ], hdata[1, ]))
 	if ( 0 == length(rData) ) return(NULL)
+
+	rData = rbind(rData, data.table(x = NA,
+		y = median(unlist(nd[, ..sigCol]), na.rm = T),
+		type = "Median intensity",
+		col = sigCol, label = NA))
 	rData$eid = nd[1, eid]
 	rData$sn = nd[1, sn]
 
