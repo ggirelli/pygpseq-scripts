@@ -33,6 +33,9 @@ parser = add_argument(parser, arg = '--threads', short = '-t', type = class(0),
 parser = add_argument(parser, arg = '--idcols', type = class(""),
 	help = 'Columns for profile identification. Default: eid, sn.',
 	default = c("eid", "sn"), nargs = Inf)
+parser = add_argument(parser, arg = '--profcol', type = class(""),
+	help = 'Column with profile value. Default: sig_median.',
+	default = "sig_median", nargs = 1)
 
 version_flag = "0.0.1"
 parser = add_argument(parser, arg = '--version', short = '-V',
@@ -108,11 +111,11 @@ groupIDs = apply(nProfiles[, ..idcols], 1, paste, collapse = "-")
 cat("Going through profiles...\n")
 pboptions(type = "timer")
 pointData = rbindlist(pblapply(split(nProfiles, groupIDs),
-	extract_descriptors, cl = threads))
+	extract_descriptors, sigCol = profcol, cl = threads))
 
 cat("Writing output...\n")
-write.table(pointData, file.path(dirname(inpath), sprintf("%s.points.tsv",
-		tools::file_path_sans_ext(basename(inpath)))),
+write.table(pointData, file.path(dirname(inpath), sprintf("%s.%s.points.tsv",
+		tools::file_path_sans_ext(basename(inpath)), profcol)),
 	quote = F, row.names = F, col.names = T, sep = "\t")
 
 # END --------------------------------------------------------------------------
