@@ -36,6 +36,9 @@ parser = add_argument(parser, arg = '--idcols', type = class(""),
 parser = add_argument(parser, arg = '--profcol', type = class(""),
 	help = 'Column with profile value. Default: sig_median.',
 	default = "sig_median", nargs = 1)
+parser = add_argument(parser, arg = '--xthr', short = '-x', type = class(0),
+	help = 'Set threshold on the profile x axis for fitting and plotting.',
+	default = c(0, 1), nargs = 2)
 
 version_flag = "0.0.1"
 parser = add_argument(parser, arg = '--version', short = '-V',
@@ -67,6 +70,7 @@ label_neighbours = function(x, xs, f) {
 }
 
 extract_descriptors = function(nd, sigCol = "sig_median") {
+	nd = nd[mid <= xthr[2] & mid >= xthr[1]]
 	regrC = coefficients(lm(unlist(nd[, ..sigCol]) ~ poly(nd$mid, 5, raw = T)))
 	f <- eval(parse(text = paste0("function(x) (", regrC[1], "+x*", regrC[2],
 			"+(x**2)*", regrC[3], "+(x**3)*", regrC[4], "+(x**4)*", regrC[5],
