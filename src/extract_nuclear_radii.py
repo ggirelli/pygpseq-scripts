@@ -54,6 +54,9 @@ parser.add_argument('-N', '--maxnuclei', metavar = 'maxNuclei', type = int,
 parser.add_argument('-S', '--seed', metavar = 'nthreads', type = int,
 	help = """Seed for pseudorandom number generator.""")
 
+parser.add_argument('--selected', type = str, help = """
+	Path to table of selected nuclei. Mandatory columns: condition, sid, nid""")
+
 parser.add_argument('-a', '--aspect', type = float, nargs = 3,
 	help = """Physical size of Z, Y and X voxel sides in nm. Default: 300.0 216.6 216.6""",
 	metavar = ('Z', 'Y', 'X'), default = [300., 216.6, 216.6])
@@ -75,19 +78,6 @@ parser.add_argument('--version', action = 'version',
 
 args = parser.parse_args()
 
-# class args(object):
-# 	prefix = "iTK"
-# 	rootdir = "/mnt/data/RADIANT/YFISH/iTK295_303/out3d_allNuclei/debugging"
-# 	outdir = "/mnt/data/RADIANT/YFISH/iTK295_303/out3d_allNuclei/extra/3d_trajectories"
-# 	nradii = 200
-# 	npoints = 100
-# 	maxnuclei = 500
-# 	seed = None
-# 	aspect = (300., 216.6, 216.6)
-# 	threads = 10
-# 	only_from_mid = False
-# 	mid_type = 1		
-
 assert os.path.isdir(args.rootdir)
 assert os.path.isdir(args.outdir)
 
@@ -105,6 +95,7 @@ print(f'''
   
      Prefix : {args.prefix}
        Root : {args.rootdir}
+   Selected : {args.selected}
      Output : {args.outdir}
      Aspect : {args.aspect}
     # Radii : {args.nradii}
@@ -442,6 +433,26 @@ for n in tqdm(sampleList, desc = "Dividing in conditions"):
 		nd[m[1]].append(m[0])
 	else:
 		nd[m[1]] = [m[0]]
+
+selectedNuclei = {}
+if type(None) != type(args.selected):
+	assert os.path.isfile(args.selected)
+	nTable = pd.read_csv(args.selected, sep = "\t")
+	reqCols = ("condition", "sid", "nid")
+
+	assert all([x in nTable.columns for x in reqCols])
+	for i in range(nTable.shape[0]):
+		n = nTable.loc[i]
+		signature = f's{n["sid"]}n{n["nid"]}'
+		if n['condition'] not in selectedNuclei.keys():
+			selectedNuclei[n['condition']] = set()
+		selectedNuclei[n['condition']].add(signature)
+
+	assert 0 != np.sum([len(nd[x]) for x in nd.keys()])
+	for eid in nd.keys():
+		nd[eid] = [n for n in nd[eid] if n in selectedNuclei[eid]]
+
+assert 0 != np.sum([len(nd[x]) for x in nd.keys()])
 
 data = []
 cid = 0
