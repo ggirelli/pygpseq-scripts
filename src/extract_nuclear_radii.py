@@ -51,7 +51,7 @@ parser.add_argument('-b', '--npoints', metavar = 'npoints', type = int,
 	default = 100, help = """Number of points to sample on the radii. Default: 100""")
 parser.add_argument('-N', '--maxnuclei', metavar = 'maxNuclei', type = int,
 	default = 500, help = """Maximum number nuclei to extract radii from. Default: 500""")
-parser.add_argument('-S', '--seed', metavar = 'nthreads', type = int,
+parser.add_argument('-S', '--seed', metavar = 'seed', type = int,
 	help = """Seed for pseudorandom number generator.""")
 
 parser.add_argument('--selected', type = str, help = """
