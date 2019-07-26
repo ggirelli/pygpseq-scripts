@@ -449,7 +449,8 @@ if type(None) != type(args.selected):
 		selectedNuclei[n['condition']].add(signature)
 
 	assert 0 != np.sum([len(nd[x]) for x in nd.keys()])
-	for eid in nd.keys():
+	conditionList = list(nd.keys())
+	for eid in conditionList:
 		if eid not in selectedNuclei.keys():
 			nd.pop(eid, None)
 		else:
