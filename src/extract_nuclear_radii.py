@@ -451,7 +451,7 @@ if type(None) != type(args.selected):
 	assert 0 != np.sum([len(nd[x]) for x in nd.keys()])
 	for eid in nd.keys():
 		if eid not in selectedNuclei.keys():
-			nd[eid] = None
+			nd.pop(eid, None)
 		else:
 			nd[eid] = [n for n in nd[eid] if n in selectedNuclei[eid]]
 
