@@ -53,8 +53,8 @@ attach(p['' != names(p)])
 
 if ( is.na(timepoints) ) {
 	cLevels = c(paste0(c(1, 2, 5, 10, 15, 30, 45), "min"),
-		paste0(c(1, 2, 6), "h"), "ON", "LongON")
-	cTime = c(1, 2, 5, 10, 15, 30, 45, c(1, 2, 6)*60, 16*60, 72*60)
+		paste0(c(1, 2, 3, 6), "h"), "ON", "LongON")
+	cTime = c(1, 2, 5, 10, 15, 30, 45, c(1, 2, 3, 6)*60, 16*60, 72*60)
 	cMeta = data.table(
 		levels = factor(cLevels, levels = cLevels),
 		time = cTime, key = "levels"
