@@ -86,8 +86,8 @@ label_neighbours = function(x, xs, f) {
 
 extract_descriptors = function(nd, sigCol = "sig_median", distCol = "mid") {
 	nd = nd[get(distCol) <= xthr[2] & get(distCol) >= xthr[1]]
-	nd[, c(sigCol) := .(as.numeric(gsub("\\[(.*)\\]", "\\1", get(sigCol))))]
-	nd[, c(distCol) := .(as.numeric(gsub("\\[(.*)\\]", "\\1", get(distCol))))]
+	#nd[, c(sigCol) := .(as.numeric(gsub("\\[(.*)\\]", "\\1", get(sigCol))))]
+	#nd[, c(distCol) := .(as.numeric(gsub("\\[(.*)\\]", "\\1", get(distCol))))]
 	regrC = coefficients(lm(unlist(unlist(nd[, ..sigCol])) ~ poly(unlist(nd[, ..distCol]), 5, raw = T)))
 	f <- eval(parse(text = paste0("function(x) (", regrC[1], "+x*", regrC[2],
 			"+(x**2)*", regrC[3], "+(x**3)*", regrC[4], "+(x**4)*", regrC[5],
