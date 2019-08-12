@@ -1,3 +1,3 @@
-# radiant-scripts
+# pygpseq-scripts
 
-Scripts to be integrated in the RADIANT package.
+Scripts that extend the pygpseq package functionalities.
