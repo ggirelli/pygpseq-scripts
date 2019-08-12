@@ -56,17 +56,11 @@ attach(p['' != names(p)], warn.conflicts = F)
 
 if ( all(is.na(idcols)) ) idcols = c("eid", "sn")
 
-# inpath = "/mnt/data/RADIANT/YFISH/iTK295_303/out3d_allNuclei/extra/3d_trajectories/nuclear_radii.tsv"
-# threads = 20
-# idcols = c("condition", "n", "line")
-# profcol = "signal"
-# distcol = "norm_lamina_dist"
-# xthr = c(0,1)
-
 # FUNCTION =====================================================================
 
 label_neighbours = function(x, xs, f) {
 	xDiff = xs-x
+	if ( all(xDiff >= 0) | all(xDiff <=0) ) return(NA)
 	if ( !any(xDiff == 0) ) {
 		bIDs = c(last(which(xDiff < 0)), which(xDiff > 0)[1])
 		if ( 1 == length(bIDs) ) return(NA)
