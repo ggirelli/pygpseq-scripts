@@ -22,46 +22,46 @@ setDTthreads(1)
 # INPUT ========================================================================
 
 scriptName = "extract_profile_descriptors.R"
-# parser = arg_parser(paste0(
-# "Calculate "), name = scriptName)
+parser = arg_parser(paste0(
+"Calculate "), name = scriptName)
 
-# parser = add_argument(parser, arg = 'inpath',
-# 	help = 'Path to nuclei table.')
+parser = add_argument(parser, arg = 'inpath',
+	help = 'Path to nuclei table.')
 
-# parser = add_argument(parser, arg = '--threads', short = '-t', type = class(0),
-# 	help = 'Number of threads for parallelization.', default = 1, nargs = 1)
-# parser = add_argument(parser, arg = '--idcols', type = class(""),
-# 	help = 'Columns for profile identification. Default: eid, sn.', nargs = Inf)
-# parser = add_argument(parser, arg = '--profcol', type = class(""),
-# 	help = 'Column with profile value. Default: sig_median.',
-# 	default = "sig_median", nargs = 1)
-# parser = add_argument(parser, arg = '--distcol', type = class(""),
-# 	help = 'Column with distance from lamina value. Default: mid.',
-# 	default = "mid", nargs = 1)
-# parser = add_argument(parser, arg = '--xthr', short = '-x', type = class(0),
-# 	help = 'Set threshold on the profile x axis for fitting and plotting.',
-# 	default = c(0, 1), nargs = 2)
+parser = add_argument(parser, arg = '--threads', short = '-t', type = class(0),
+	help = 'Number of threads for parallelization.', default = 1, nargs = 1)
+parser = add_argument(parser, arg = '--idcols', type = class(""),
+	help = 'Columns for profile identification. Default: eid, sn.', nargs = Inf)
+parser = add_argument(parser, arg = '--profcol', type = class(""),
+	help = 'Column with profile value. Default: sig_median.',
+	default = "sig_median", nargs = 1)
+parser = add_argument(parser, arg = '--distcol', type = class(""),
+	help = 'Column with distance from lamina value. Default: mid.',
+	default = "mid", nargs = 1)
+parser = add_argument(parser, arg = '--xthr', short = '-x', type = class(0),
+	help = 'Set threshold on the profile x axis for fitting and plotting.',
+	default = c(0, 1), nargs = 2)
 
-# version_flag = "0.0.1"
-# parser = add_argument(parser, arg = '--version', short = '-V',
-# 	help = 'Print version and quit.', flag = T)
-# args = commandArgs(trailingOnly=TRUE)
-# if ( "--version" %in% args ) {
-# 	cat(sprintf("%s v%s\n", scriptName, version_flag))
-# 	quit()
-# }
+version_flag = "0.0.1"
+parser = add_argument(parser, arg = '--version', short = '-V',
+	help = 'Print version and quit.', flag = T)
+args = commandArgs(trailingOnly=TRUE)
+if ( "--version" %in% args ) {
+	cat(sprintf("%s v%s\n", scriptName, version_flag))
+	quit()
+}
 
-# p = parse_args(parser)
-# attach(p['' != names(p)], warn.conflicts = F)
+p = parse_args(parser)
+attach(p['' != names(p)], warn.conflicts = F)
 
-# if ( all(is.na(idcols)) ) idcols = c("eid", "sn")
+if ( all(is.na(idcols)) ) idcols = c("eid", "sn")
 
-inpath = "/mnt/data/RADIANT/YFISH/iTK295_303/out3d_allNuclei/extra/3d_trajectories/nuclear_radii.tsv"
-threads = 20
-idcols = c("condition", "n", "line")
-profcol = "signal"
-distcol = "norm_lamina_dist"
-xthr = c(0,1)
+# inpath = "/mnt/data/RADIANT/YFISH/iTK295_303/out3d_allNuclei/extra/3d_trajectories/nuclear_radii.tsv"
+# threads = 20
+# idcols = c("condition", "n", "line")
+# profcol = "signal"
+# distcol = "norm_lamina_dist"
+# xthr = c(0,1)
 
 # FUNCTION =====================================================================
 
