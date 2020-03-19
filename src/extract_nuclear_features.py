@@ -62,7 +62,7 @@ assert os.path.isdir(args.rootdir)
 assert os.path.isdir(args.outdir)
 
 if type(None) == type(args.prefix):
-	args.prefix = os.basename(args.outdir)
+	args.prefix = os.path.basename(args.outdir)
 
 args.threads = check_threads(args.threads)
 
